@@ -3,16 +3,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:todo_frontend/main.dart';
 
 void main() {
-  testWidgets('App generation message displayed', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Renders app title and empty state', (WidgetTester tester) async {
+    await tester.pumpWidget(const TodoApp());
 
-    expect(find.text('todo_frontend App is being generated...'), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('To-Do'), findsOneWidget);
+    expect(find.text('No tasks yet. Add your first one above.'), findsOneWidget);
   });
 
-  testWidgets('App bar has correct title', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Can add a task and see it in the list', (WidgetTester tester) async {
+    await tester.pumpWidget(const TodoApp());
+    await tester.pumpAndSettle();
 
-    expect(find.text('todo_frontend'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Buy milk');
+    await tester.tap(find.text('Add'));
+
+    // Let ChangeNotifier updates + persistence complete.
+    await tester.pumpAndSettle();
+
+    expect(find.text('Buy milk'), findsOneWidget);
   });
 }
